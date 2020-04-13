@@ -105,3 +105,4 @@ venv.bak/
 
 #scorobot
 scorobot.cfg
+**.db
