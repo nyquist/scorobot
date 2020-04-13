@@ -3,6 +3,8 @@ class GameRules:
         return
     def getPoints(self):
         return 0
+    def getElo(self):
+        return 0
         
 class Championship(GameRules):
     # Each team plays any other team

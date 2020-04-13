@@ -16,8 +16,8 @@ class Scorobot(discord.Client):
         print(message.content)  
         print(message.author)  
         print(message.channel)
-        if message.author != "fifa-pes-score-bot#3518":
-            await message.channel.send("wow")
+        if message.content.startswith('sb!'):
+            await message.channel.send("Here I am")
 
 if __name__ == "__main__":
     load_dotenv()
