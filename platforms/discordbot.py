@@ -1,9 +1,16 @@
 import discord
 from dotenv import load_dotenv
+from platforms.botplatform import BotPlatform
 import os
+import re
 
 
-class Scorobot(discord.Client):
+
+class DiscordBot(discord.Client, BotPlatform):
+    def __init__(self):
+        self.lastTeamA = None
+        self.lastTeamB = None
+        discord.Client.__init__(self)
     async def on_ready(self):
         print(f'{self.user} has connected to Discord!')
         print(f'{self.user} is connected to the following guild:\n')
@@ -16,11 +23,14 @@ class Scorobot(discord.Client):
         print(message.content)  
         print(message.author)  
         print(message.channel)
-        if message.content.startswith('sb!'):
-            await message.channel.send("Here I am")
+
+        received_message = self.parseMessage(message.content)
+        if received_message is not None:
+            
+            await message.channel.send(self.reaction(received_message))        
 
 if __name__ == "__main__":
     load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
-    scorobot = Scorobot()
+    scorobot = DiscordBot()
     scorobot.run(TOKEN)

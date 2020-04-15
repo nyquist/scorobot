@@ -68,6 +68,7 @@ class Tournament:
         return totals
         
     def _getRankingValue(self,item):
+        ## TO move into rules
         key = item[0]
         w = item[1]['w']
         d = item[1]['d']
