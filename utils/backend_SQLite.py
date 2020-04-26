@@ -1,5 +1,5 @@
 import sqlite3
-from backend import Backend
+from utils.backend import Backend
 
 class SQLiteDB(Backend):
     def __init__(self):
@@ -26,6 +26,7 @@ class SQLiteDB(Backend):
     def addGame(self, game_details):
         self.c.execute('INSERT INTO games (date, team1, team2, scor1, scor2, duration, championship_id) VALUES(?,?,?,?,?,?,?)',game_details)
         self.conn.commit()
+        print(game_details)
         return self.c.lastrowid
         
     def getGames(self, championship_id):

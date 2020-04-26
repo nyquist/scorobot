@@ -2,9 +2,9 @@ import datetime
 import time
 import sqlite3
 import random
-from players import Team, SinglePlayer
-from utils.backend_SQLite import SQLiteDB
-from rules import *
+from globalcfg import backend
+from games.players import Team, SinglePlayer
+from games.rules import SoccerChampionship
 
 class Game:
     def __init__(self, team1, team2, score1, score2,duration='90'):
@@ -16,13 +16,17 @@ class Game:
 
 
 class Tournament:
+    
     def __init__(self, name, host_id, rules):
+        global backend
         self.teams = set()
         self.games = []
         self.id = backend.addTournament(name, host_id)
         self.rules = rules
-    
-    def addGame(self, game):
+    def addGame(self, teamA, teamB, scoreA, scoreB):
+        new_game = Game(Team(teamA,1), Team(teamB,1), scoreA, scoreB)
+        return self.addGameObj(new_game)
+    def addGameObj(self, game):
         self.games.append(game)
         self.teams.add(game.teams[0])
         self.teams.add(game.teams[1])
@@ -44,7 +48,7 @@ class Tournament:
             else:
                 old_totals = None
             teams[teamB] = self._teamTotals(old_totals, game[5], game[4])
-        return sorted(teams.items(), key= self._getRankingValue, reverse=True)
+        return sorted(teams.items(), key= self.rules.rank, reverse=True)
     
     def _teamTotals(self, old_totals, gf, ga):
         if old_totals is None:
@@ -67,29 +71,17 @@ class Tournament:
             }
         return totals
         
-    def _getRankingValue(self,item):
-        ## TO move into rules
-        key = item[0]
-        w = item[1]['w']
-        d = item[1]['d']
-        l = item[1]['l']
-        gf = item[1]['gf']
-        ga = item[1]['ga']
-        vp = 3
-        dp = 1
-        lp = 0
-        return w*vp + d*dp + l*lp
+    
         
 if __name__ == "__main__":
     team_names = ["A","B","C","D","E","F","G","H"]
     team1 = random.choice(team_names)
     team_names.remove(team1)
     team2 = random.choice(team_names)
-    backend = SQLiteDB()
-    rules = SoccerChampionship(len(team_names),'any')
+    rules = SoccerChampionship('any')
     new_tournament = Tournament('Champions League 2020','Discord#Fotbal', rules)
     new_game = Game(Team(team1,1), Team(team2,1), int(random.randint(0,4)), int(random.randint(0,4)))
-    new_tournament.addGame(new_game)
+    new_tournament.addGameObj(new_game)
     new_tournament.getRanking()
     for line in new_tournament.getRanking():
         print ("{T:10} {M:2} {W:2} {D:2} {L:2} {GF:3} {GA:3} {P:3}".format(T=line[0],M=line[1]['w']+line[1]['d']+line[1]['l'], W=line[1]['w'], D=line[1]['d'], L=line[1]['l'], GF=line[1]['gf'], GA=line[1]['ga'], P=line[1]['p']))

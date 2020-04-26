@@ -7,10 +7,10 @@ import re
 
 
 class DiscordBot(discord.Client, BotPlatform):
-    def __init__(self):
-        self.lastTeamA = None
-        self.lastTeamB = None
+    def __init__(self, tournament=None):
+        BotPlatform.__init__(self)
         discord.Client.__init__(self)
+        self.tournament = tournament
     async def on_ready(self):
         print(f'{self.user} has connected to Discord!')
         print(f'{self.user} is connected to the following guild:\n')
@@ -26,7 +26,6 @@ class DiscordBot(discord.Client, BotPlatform):
 
         received_message = self.parseMessage(message.content)
         if received_message is not None:
-            
             await message.channel.send(self.reaction(received_message))        
 
 if __name__ == "__main__":

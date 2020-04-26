@@ -8,7 +8,7 @@ class GameRules:
         
 class Championship(GameRules):
     # Each team plays any other team
-    def __init__(self, teams, home_away, vp, dp, lp=0, lb =0, wb = 0, lb_diff=None, wb_diff=None):
+    def __init__(self, home_away, vp, dp, lp=0, lb =0, wb = 0, lb_diff=None, wb_diff=None):
         self.vp = vp
         self.dp = dp
         self.lp = lp
@@ -32,23 +32,36 @@ class Championship(GameRules):
                 return winner
             else:
                 return loser
+    
+    def rank(self,item):
+        ## TO move into rules
+        key = item[0]
+        w = item[1]['w']
+        d = item[1]['d']
+        l = item[1]['l']
+        gf = item[1]['gf']
+        ga = item[1]['ga']
+        vp = 3
+        dp = 1
+        lp = 0
+        return w*vp + d*dp + l*lp
 
 class SoccerChampionship(Championship):
-    def __init__(self, teams, home_away):
-        Championship.__init__(self,teams, home_away,3,1)
+    def __init__(self, home_away):
+        Championship.__init__(self, home_away,3,1)
 
 class HandballChampionship(Championship):
-    def __init__(self, teams, home_away):
-        Championship.__init__(self,teams, home_away,2,1)
+    def __init__(self, home_away):
+        Championship.__init__(self, home_away,2,1)
 
 class RugbyChampionship(Championship):
-    def __init__(self, teams, home_away):
-        Championship.__init__(self,teams, home_away,4, 2,lp =0, wb=7, lb=7)
+    def __init__(self, home_away):
+        Championship.__init__(self, home_away,4, 2,lp =0, wb=7, lb=7)
 
 
 class Cup(GameRules):
     # Bracket elimination system
-    def __init__(self, teams):
+    def __init__(self):
         GameRules.__init__(self)
 
 class WorldCup(Championship, Cup):
@@ -56,7 +69,7 @@ class WorldCup(Championship, Cup):
     def __init__(self):
         GameRules.__init__(self)
 
-class ELOCup(GameRules):
+class ELOCup(Championship):
     #Random games. Only the ELO counts
     def __init__(self):
         GameRules.__init__(self)
