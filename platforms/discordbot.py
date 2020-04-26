@@ -32,5 +32,5 @@ class DiscordBot(discord.Client, BotPlatform):
 if __name__ == "__main__":
     load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
-    scorobot = DiscordBot()
+    scorobot = Scorobot()
     scorobot.run(TOKEN)
