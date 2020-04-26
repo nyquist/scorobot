@@ -106,5 +106,5 @@ venv.bak/
 #scorobot
 scorobot.cfg
 scorobot-env/**
-*.db
 .vscode/**
+**.db
