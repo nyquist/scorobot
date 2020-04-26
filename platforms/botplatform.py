@@ -65,7 +65,7 @@ class BotPlatform:
             return "{}-{}: {} - {} ? Please confirm".format(parsed_message[1], parsed_message[2], parsed_message[3], parsed_message[4])
         if parsed_message[0] == 'confirmation':
             if parsed_message[1]:
-                return "Acknowledge. I will proceed."
+                return "Acknowledged. I will proceed."
             else:
                 return "Canceling."
         if parsed_message[0] == 'error':
