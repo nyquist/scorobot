@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN git clone https://github.com/nyquist/scorobot.git
 
 WORKDIR /usr/src/app/scorobot
-RUN git checkout version2
+#RUN git checkout version2
 
 
 VOLUME /usr/src/app/scorobot/storage
