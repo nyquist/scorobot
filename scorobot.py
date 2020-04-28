@@ -1,9 +1,9 @@
+from globalcfg import backend, token
 from platforms.discordbot import DiscordBot
-
 from games.game import Game, Tournament
 from games.players import Team, SinglePlayer
 from games.rules import SoccerChampionship
-from globalcfg import backend, token
+
 
 if __name__ == '__main__':
     rules = SoccerChampionship("any")
