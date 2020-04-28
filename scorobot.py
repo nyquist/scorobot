@@ -1,4 +1,4 @@
-from globalcfg import backend, token
+import globalcfg
 from platforms.discordbot import DiscordBot
 from games.game import Game, Tournament
 from games.players import Team, SinglePlayer
@@ -9,5 +9,5 @@ if __name__ == '__main__':
     rules = SoccerChampionship("any")
     myTournament = Tournament("PES ELO", 1, rules)
     myBot = DiscordBot(myTournament)
-    myBot.run(token)
+    myBot.run(globalcfg.TOKEN)
     

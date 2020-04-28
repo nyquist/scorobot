@@ -8,5 +8,5 @@ backend_location = "./storage/games.db"
 print("Using backend: ", Path(backend_location).absolute())
 print("Using token: ", os.getenv('DISCORD_TOKEN'))
 backend = SQLiteDB(backend_location)
-token = os.getenv('DISCORD_TOKEN')
+TOKEN = os.getenv('DISCORD_TOKEN')
 
