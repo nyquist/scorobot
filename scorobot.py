@@ -8,7 +8,7 @@ from globalcfg import backend
 
 if __name__ == '__main__':
     
-    load_dotenv()
+    load_dotenv("config/.env")
     TOKEN = os.getenv('DISCORD_TOKEN')
     rules = SoccerChampionship("any")
     myTournament = Tournament("PES ELO", 1, rules)
