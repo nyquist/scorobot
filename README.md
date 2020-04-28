@@ -7,5 +7,5 @@ export DISCORD_TOKEN = ...
 ```
 # Run
 ```
-python -m scorobot.py
+python -m scorobot
 ```
