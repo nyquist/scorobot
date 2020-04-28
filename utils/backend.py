@@ -7,6 +7,6 @@ class Backend:
         return
     def addGame(self,game_details):
         return
-    def getGames(self, championship_id):
+    def getGames(self, championship_id, last_hours):
         return
     
