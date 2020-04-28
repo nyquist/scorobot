@@ -1,4 +1,5 @@
 import re
+import time
 
 class Validator:
     def __init__(self, teamA, teamB, scoreA, scoreB, tournament):
@@ -26,7 +27,7 @@ class BotPlatform:
         self.lastValid = None
         self.lastCancelled = None
         self.toBeConfirmed = None
-        self.reactions = ["RESULT", "YES", "NO", "QUERY", "STATS"]
+        self.reactions = ["RESULT", "YES", "NO", "QUERY", "STATS", "LIST", "TODAY"]
         
     def parseMessage(self,message_content):
         """
@@ -47,6 +48,12 @@ class BotPlatform:
             return "QUERY"
         elif self._isStats(message_content):
             return "STATS"
+        elif self._isList(message_content):
+            return "LIST"
+        elif self._isToday(message_content):
+            return "TODAY"
+        elif self._isHelp(message_content):
+            return "HELP"
         else:
             return "Don't care"
     
@@ -70,6 +77,33 @@ class BotPlatform:
             response = response + "\n{T:10} {M:>2} {W:>2} {D:>2} {L:>2} {GF:>3} {GA:>3} {P:>3}".format(T="Team",M="M", W="W", D="D", L="L", GF="GF", GA="GA", P="P")
             for line in self.tournament.getRanking():
                 response = response +  "\n{T:10} {M:2} {W:2} {D:2} {L:2} {GF:3} {GA:3} {P:3}".format(T=line[0],M=line[1]['w']+line[1]['d']+line[1]['l'], W=line[1]['w'], D=line[1]['d'], L=line[1]['l'], GF=line[1]['gf'], GA=line[1]['ga'], P=line[1]['p'])
+            response = response + "\n```"
+            return response
+        elif parsed_message == "LIST":
+            response = "```"
+            for line in self.tournament.getGames(24):
+                response = response +  "\n{ID:4}. {D:10}:  {T1:>10} {S1} - {S2} {T2:<10}".format(ID=line[0],D=time.ctime(float(line[1])), T1=line[2], T2=line[3], S1=line[4], S2=line[5])
+            response = response + "\n```"
+            return response
+        elif parsed_message == "HELP":
+            response = """
+```
+teamA - teamB x-y | x-y
+ok | yes | y
+cancel | no | n
+all-time
+today
+games
+help
+status
+```            
+            """
+            return response
+        elif parsed_message == "TODAY":
+            response = "```"
+            response = response + "\n{T:10} {M:>2} {W:>2} {D:>2} {L:>2} {GF:>3} {GA:>3} {P:>3}".format(T="Team",M="M", W="W", D="D", L="L", GF="GF", GA="GA", P="P")
+            for line in self.tournament.getRanking(24):
+                response = response +  "\n**{T:10}** {M:2} {W:2} {D:2} {L:2} {GF:3} {GA:3} {P:3}".format(T=line[0],M=line[1]['w']+line[1]['d']+line[1]['l'], W=line[1]['w'], D=line[1]['d'], L=line[1]['l'], GF=line[1]['gf'], GA=line[1]['ga'], P=line[1]['p'])
             response = response + "\n```"
             return response
         self.toBeConfirmed.TTL = self.toBeConfirmed.TTL - 1
@@ -135,7 +169,38 @@ class BotPlatform:
     def _isStats(self, message):
         stats = [
             #clasament
-            r"^clasament$",
+            r"^all-time$",
+        ]
+        for r in stats:
+            search_result = re.search(r,message)
+            if search_result is not None:
+                return True
+        return False
+    
+    def _isList(self, message):
+        stats = [
+            #games
+            r"^games$",
+        ]
+        for r in stats:
+            search_result = re.search(r,message)
+            if search_result is not None:
+                return True
+        return False
+    def _isToday(self, message):
+        stats = [
+            #games
+            r"^today$",
+        ]
+        for r in stats:
+            search_result = re.search(r,message)
+            if search_result is not None:
+                return True
+        return False
+    def _isHelp(self, message):
+        stats = [
+            #games
+            r"^help$",
         ]
         for r in stats:
             search_result = re.search(r,message)

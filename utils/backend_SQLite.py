@@ -1,9 +1,10 @@
 import sqlite3
 from utils.backend import Backend
+from datetime import timedelta
+import time
 
 class SQLiteDB(Backend):
-    def __init__(self):
-        db_file = "games.db"
+    def __init__(self,db_file):
         self.conn = sqlite3.connect(db_file)
         self.c = self.conn.cursor()
         Backend.__init__(self)
@@ -29,8 +30,11 @@ class SQLiteDB(Backend):
         print(game_details)
         return self.c.lastrowid
         
-    def getGames(self, championship_id):
-        self.c.execute('SELECT * FROM games WHERE championship_id = ?',(championship_id,))
+    def getGames(self, championship_id, last_hours):
+        if last_hours > 0:
+            self.c.execute('SELECT * FROM games WHERE championship_id = ? AND date >= ?',(championship_id,time.time() - 60*60*last_hours))
+        else:
+            self.c.execute('SELECT * FROM games WHERE championship_id = ?',(championship_id,))
         return self.c.fetchall()
 
 #if __name__ == '__main__':
