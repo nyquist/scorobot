@@ -89,6 +89,7 @@ class BotPlatform:
             response = """
 ```
 teamA - teamB x-y | x-y
+teamA teamB x y
 ok | yes | y
 cancel | no | n
 all-time
@@ -120,6 +121,7 @@ status
             #3 - 2. Should assume the previous teams
             r"^(\d+)\w*?-\w*?(\d+)$",
             #r"^(\d+)-(\d+)$"
+            r"^(.+?)-(.+?) (\d+)*? +(\d+)",
         ]
         for r in results:
             search_result = re.search(r,message)
