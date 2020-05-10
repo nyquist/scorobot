@@ -151,7 +151,7 @@ status
             r"^(cancel)$"
         ]
         for r in cancelations:
-            search_result = re.search(r,message)
+            search_result = re.search(r,message.lower())
             if search_result is not None:
                 return True
         return False    
@@ -161,7 +161,7 @@ status
             r"^status$",
         ]
         for r in cancelations:
-            search_result = re.search(r,message)
+            search_result = re.search(r,message.lower())
             if search_result is not None:
                 return True
         return False
@@ -172,7 +172,7 @@ status
             r"^all-time$",
         ]
         for r in stats:
-            search_result = re.search(r,message)
+            search_result = re.search(r,message.lower())
             if search_result is not None:
                 return True
         return False
@@ -183,7 +183,7 @@ status
             r"^games$",
         ]
         for r in stats:
-            search_result = re.search(r,message)
+            search_result = re.search(r,message.lower())
             if search_result is not None:
                 return True
         return False
@@ -193,7 +193,7 @@ status
             r"^today$",
         ]
         for r in stats:
-            search_result = re.search(r,message)
+            search_result = re.search(r,message.lower())
             if search_result is not None:
                 return True
         return False
@@ -203,7 +203,7 @@ status
             r"^help$",
         ]
         for r in stats:
-            search_result = re.search(r,message)
+            search_result = re.search(r,message.lower())
             if search_result is not None:
                 return True
         return False
