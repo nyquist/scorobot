@@ -117,11 +117,9 @@ status
     def _isResult(self,message):
         results = [
             #TeamA - TeamB 4-2
-            r"^\w*?(.+?)-(.+?)\w*?(\d+)\w*?-\w*?(\d+)",
+            r"^\s*(\S+)\s*[ -]+\s*(\S+)\s*(\d+)[ -]+(\d+)",
             #3 - 2. Should assume the previous teams
             r"^(\d+)\w*?-\w*?(\d+)$",
-            #r"^(\d+)-(\d+)$"
-            r"^(.+?)-(.+?) (\d+)*? +(\d+)",
         ]
         for r in results:
             search_result = re.search(r,message)
