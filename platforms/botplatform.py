@@ -125,6 +125,7 @@ status
             search_result = re.search(r,message)
             if search_result is not None:
                 x = search_result.groups()
+                print("Results matched:",x)
                 if len(x) == 2 and self.lastValid is not None:
                     self.toBeConfirmed = Validator(self.lastValid.teamA, self.lastValid.teamB, int(x[0]), int(x[1]), self.tournament)
                     return True
