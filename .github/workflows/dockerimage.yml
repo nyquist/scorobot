@@ -15,6 +15,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag nyquist7/scorobot
+      run: docker build . --no-cache --file Dockerfile --tag nyquist7/scorobot
     - name: Push the Docker image
       run: docker push nyquist7/scorobot:$(date -Format "yyyyMMddHHmm")
