@@ -26,7 +26,7 @@ class DiscordBot(discord.Client, BotPlatform):
 
         received_message = self.parseMessage(message.content)
         if received_message is not None:
-            await message.channel.send(self.reaction(received_message))        
+            await message.channel.send(received_message)        
 
 if __name__ == "__main__":
     load_dotenv()
