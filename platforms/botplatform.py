@@ -51,7 +51,7 @@ class BotPlatform:
         elif self._isStatus(message_content):
             return self._onStatus()
         elif self._isAllTime(message_content):
-            return self._onAllTime
+            return self._onAllTime()
         elif self._isGames(message_content):
             return self._onGames()
         elif self._isToday(message_content):
