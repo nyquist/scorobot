@@ -8,6 +8,6 @@ from games.rules import SoccerChampionship
 if __name__ == '__main__':
     rules = SoccerChampionship("any")
     myTournament = Tournament("PES ELO", 1, rules)
-    myBot = DiscordBot(myTournament)
+    myBot = DiscordBot(tournament=myTournament, testing=globalcfg.TESTING)
     myBot.run(globalcfg.TOKEN)
     

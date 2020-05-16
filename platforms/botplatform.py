@@ -1,6 +1,7 @@
 import re
 import time
-import platforms.reactions
+## This platform is used to get os number. It's not platforms
+import platform
 
 class Validator:
     def __init__(self, teamA, teamB, scoreA, scoreB, tournament):
@@ -23,11 +24,12 @@ class Validator:
 
 
 class BotPlatform:
-    def __init__(self, tournament = None):
+    def __init__(self, tournament = None, testing = False):
         self.tournament = tournament
         self.lastValid = None
         self.lastCancelled = None
         self.toBeConfirmed = None
+        self.testing = testing
 
         
     def parseMessage(self,message_content):
@@ -47,7 +49,7 @@ class BotPlatform:
             self.toBeConfirmed = None
             return self._onCancellation("User cancelled")
         elif self._isStatus(message_content):
-            return self._onStatus
+            return self._onStatus()
         elif self._isAllTime(message_content):
             return self._onAllTime
         elif self._isGames(message_content):
@@ -134,6 +136,8 @@ class BotPlatform:
             lastValid = {self.lastValid} 
             lastCancelled = {self.lastCancelled}
             toBeConfirmed = {self.toBeConfirmed}
+            testing = {self.testing}
+            running_on = {platform.system()}-{platform.release()}
             ```
             """
 
