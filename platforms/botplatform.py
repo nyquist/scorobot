@@ -1,5 +1,6 @@
 import re
 import time
+import platforms.reactions
 
 class Validator:
     def __init__(self, teamA, teamB, scoreA, scoreB, tournament):
@@ -27,11 +28,13 @@ class BotPlatform:
         self.lastValid = None
         self.lastCancelled = None
         self.toBeConfirmed = None
+
         
     def parseMessage(self,message_content):
         """
         returns the answer to bot
         """
+
         if self._isResult(message_content):
             return self._onResult()
         elif self._isConfirmation(message_content):
@@ -61,7 +64,17 @@ class BotPlatform:
             return self._onCancellation("No confirmation received.")
         return None
     
-        
+
+
+
+#### Reactions
+    def  genericReaction(self, message, list_of_triggers):
+        for t in list_of_triggers: 
+            search_result = re.search(t, message.lower())
+            if search_result is not None:
+                return True
+        return False
+
     
     def _isResult(self,message):
         results = [
@@ -86,44 +99,35 @@ class BotPlatform:
         return 'Added #{}: **{}**-**{}**: {}-{}'.format(self.lastValid.gameId,self.lastValid.teamA, self.lastValid.teamB, self.lastValid.scoreA, self.lastValid.scoreB, )
 
     def _isConfirmation(self, message):
-        confirmations = [
+        triggers = [
             # y, yes
             r"^(yes|y)$",
             r"^(ok)$"
         ]
-        for r in confirmations: 
-            search_result = re.search(r,message.lower())
-            if search_result is not None:
-                return True
-        return False
+        return self.genericReaction(message, triggers)
+
     def _onConfirmation(self):
         return '"{}"-"{}": "{}" - "{}" ? Please confirm'.format(self.toBeConfirmed.teamA, self.toBeConfirmed.teamB, self.toBeConfirmed.scoreA, self.toBeConfirmed.scoreB)
 
     def _isCancellation(self, message):
-        cancellations = [
+        triggers = [
             # n, no
             r"^(no?)$",
             #cancel
             r"^(cancel)$"
         ]
-        for r in cancellations:
-            search_result = re.search(r,message.lower())
-            if search_result is not None:
-                return True
-        return False    
+        return self.genericReaction(message, triggers)
+
     def _onCancellation(self, reason = ""):
         return 'Canceled: "{}"-"{}": "{}" - "{}". ({})'.format(self.lastCancelled.teamA, self.lastCancelled.teamB, self.lastCancelled.scoreA, self.lastCancelled.scoreB, reason)
 
     def _isStatus(self, message):
-        cancellations = [
+        triggers = [
             # status
             r"^status$",
         ]
-        for r in cancellations:
-            search_result = re.search(r,message.lower())
-            if search_result is not None:
-                return True
-        return False
+        return self.genericReaction(message, triggers)
+
     def _onStatus(self):
         return f"""
             ```
@@ -134,15 +138,12 @@ class BotPlatform:
             """
 
     def _isAllTime(self, message):
-        stats = [
+        triggers = [
             #clasament
             r"^all-time$",
         ]
-        for r in stats:
-            search_result = re.search(r,message.lower())
-            if search_result is not None:
-                return True
-        return False
+        return self.genericReaction(message, triggers)
+
     def _onAllTime(self):
         response = "```"
         response = response + "\n{T:10} {M:>2} {W:>2} {D:>2} {L:>2} {GF:>3} {GA:>3} {P:>3}".format(T="Team",M="M", W="W", D="D", L="L", GF="GF", GA="GA", P="P")
@@ -152,15 +153,11 @@ class BotPlatform:
         return response
 
     def _isGames(self, message):
-        stats = [
+        triggers = [
             #games
             r"^games$",
         ]
-        for r in stats:
-            search_result = re.search(r,message.lower())
-            if search_result is not None:
-                return True
-        return False
+        return self.genericReaction(message, triggers)
     
     def _onGames(self):
         response = "```"
@@ -170,15 +167,12 @@ class BotPlatform:
         return response
 
     def _isToday(self, message):
-        stats = [
+        triggers = [
             #games
             r"^today$",
         ]
-        for r in stats:
-            search_result = re.search(r,message.lower())
-            if search_result is not None:
-                return True
-        return False
+        return self.genericReaction(message, triggers)
+
     def _onToday(self):
         response = "```"
         response = response + "\n{T:10} {M:>2} {W:>2} {D:>2} {L:>2} {GF:>3} {GA:>3} {P:>3}".format(T="Team",M="M", W="W", D="D", L="L", GF="GF", GA="GA", P="P")
@@ -188,15 +182,13 @@ class BotPlatform:
         return response
 
     def _isHelp(self, message):
-        stats = [
+        triggers = [
             #games
             r"^help$",
         ]
-        for r in stats:
-            search_result = re.search(r,message.lower())
-            if search_result is not None:
-                return True
-        return False
+        return self.genericReaction(message, triggers)
+
+
     def _onHelp(self):
         response = """
             ```
