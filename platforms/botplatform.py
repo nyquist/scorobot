@@ -69,8 +69,12 @@ class BotPlatform:
 
 
 
-#### Reactions
-    def  genericReaction(self, message, list_of_triggers):
+#### Reactions.
+
+    
+
+
+    def genericReaction(self, message, list_of_triggers):
         for t in list_of_triggers: 
             search_result = re.search(t, message.lower())
             if search_result is not None:
@@ -83,7 +87,7 @@ class BotPlatform:
             #TeamA - TeamB 4-2
             r"^\s*(\S+)\s*[ -]+\s*(\S+)\s*(\d+)[ -]+(\d+)",
             #3 - 2. Should assume the previous teams
-            r"^(\d+)\w*?-\w*?(\d+)$",
+            r"^(\d+)\s*[- ]\s*(\d+)$",
         ]
         for r in results:
             search_result = re.search(r,message)
@@ -132,14 +136,14 @@ class BotPlatform:
 
     def _onStatus(self):
         return f"""
-            ```
-            lastValid = {self.lastValid} 
-            lastCancelled = {self.lastCancelled}
-            toBeConfirmed = {self.toBeConfirmed}
-            testing = {self.testing}
-            running_on = {platform.system()}-{platform.release()}
-            ```
-            """
+```
+lastValid = {self.lastValid} 
+lastCancelled = {self.lastCancelled}
+toBeConfirmed = {self.toBeConfirmed}
+testing = {self.testing}
+running_on = {platform.system()}-{platform.release()}
+```
+"""
 
     def _isAllTime(self, message):
         triggers = [
@@ -195,16 +199,12 @@ class BotPlatform:
 
     def _onHelp(self):
         response = """
-            ```
-            teamA - teamB x-y | x-y
-            teamA teamB x y
-            ok | yes | y
-            cancel | no | n
-            all-time
-            today
-            games
-            help
-            status
-            ```            
-            """
+`teamA - teamB X-Y | teamA teamB X-Y | X-Y`: Register game
+`ok | yes | y`: Confirm result
+`cancel | no | n`:Cancel result
+`all-time`: All time standings
+`today`: Today's standings
+`games`: Today's games
+`help`: This message
+`status`: Status"""
         return response
