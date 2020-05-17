@@ -68,6 +68,10 @@ running_on = {platform.system()}-{platform.release()}
             'is': lambda m: self.genericReaction(m, r"^games$"),
             'do': lambda *a: self.games(24)
             },
+        'all-games': {
+            'is': lambda m: self.genericReaction(m, r"^all-games$"),
+            'do': lambda *a: self.games()
+            },
         'help': {
             'is': lambda m: self.genericReaction(m, r"^help$"), 
             'do': lambda *a: """
@@ -150,19 +154,28 @@ running_on = {platform.system()}-{platform.release()}
         if hours is None:
             standings = self.tournament.getRanking()
         else:
-            standings = self.tournament.getRanking(24)
+            standings = self.tournament.getRanking(hours)
         response ="\n{T:10} {M:>2} {W:>2} {D:>2} {L:>2} {GF:>3} {GA:>3} {P:>3}".format(T="Team",M="M", W="W", D="D", L="L", GF="GF", GA="GA", P="P")
         for line in standings:
             response +=  "\n{T:10} {M:2} {W:2} {D:2} {L:2} {GF:3} {GA:3} {P:3}".format(T=line[0],M=line[1]['w']+line[1]['d']+line[1]['l'], W=line[1]['w'], D=line[1]['d'], L=line[1]['l'], GF=line[1]['gf'], GA=line[1]['ga'], P=line[1]['p'])
         return f"```{response}```"
     
     def games(self, hours = None):
+        max_games_shown = 50
         if hours is None:
             games = self.tournament.getGames()
+            since = "ever"
         else:
-            games = self.tournament.getGames(24)
-        response = ''
-        for line in games:
-            response = "\n{ID:4}. {D:10}:  {T1:>10} {S1} - {S2} {T2:<10}".format(ID=line[0],D=time.ctime(float(line[1])), T1=line[2], T2=line[3], S1=line[4], S2=line[5])
+            games = self.tournament.getGames(hours)
+            since = f"in the last {hours} hours"
+        if len(games) == 0:
+            response = f"No games {since}."
+        else:
+            if len(games) < max_games_shown:
+                max_games_shown = len(games)
+            response = f"{len(games)} games {since}. Showing most recent {max_games_shown}:"
+
+        for line in games[-max_games_shown:]:
+            response += "\n{ID:4}. {D:10}:  {T1:>10} {S1} - {S2} {T2:<10}".format(ID=line[0],D=time.ctime(float(line[1])), T1=line[2], T2=line[3], S1=line[4], S2=line[5])
         return f"```{response}```"
 
