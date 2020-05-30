@@ -1,7 +1,7 @@
 import re
 import time
 ## This platform is used to get os number. It's not platforms
-import subprocess,  platform
+import platform
 from fuzzywuzzy import fuzz
 
 
