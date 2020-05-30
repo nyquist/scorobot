@@ -32,6 +32,9 @@ class Tournament:
         return backend.addGame(game_details)
     def getGames(self, last_hours = 0):
         return backend.getGames(self.id, last_hours)
+    def getTeams(self):
+        return [row[0] for row in backend.getTeams(self.id)]
+
     def getRanking(self, last_hours = 0):
         teams = dict()
         for game in backend.getGames(self.id, last_hours):

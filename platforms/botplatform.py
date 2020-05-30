@@ -6,13 +6,21 @@ import platform
 class Validator:
     def __init__(self, teamA, teamB, scoreA, scoreB, tournament):
         self.teamA = teamA
+        self.teamAisNew = True
         self.teamB = teamB
+        self.teamBisNew = True
         self.scoreA = scoreA
         self.scoreB = scoreB
         self.validated = False
         self.TTL = 3
         self.tournament = tournament
         self.gameId = None
+        known_teams = self.tournament.getTeams()
+        print ("Teams",known_teams)
+        if self.teamA in known_teams:
+            self.teamAisNew = False
+        if self.teamB in known_teams:
+            self.teamBisNew = False
     def confirm(self):
         self.validated = True
         if self.tournament is not None:
@@ -33,15 +41,15 @@ class BotPlatform:
         self.reactions = {
         'result': {
             'is': self._isResult,
-            'do': lambda *a: '"{}"-"{}": "{}" - "{}" ? Please confirm'.format(self.toBeConfirmed.teamA, self.toBeConfirmed.teamB, self.toBeConfirmed.scoreA, self.toBeConfirmed.scoreB)
+            'do': lambda *a: '"{}"{}-"{}"{}: "{}" - "{}" ? Please confirm'.format(self.toBeConfirmed.teamA, "[NEW]" if self.toBeConfirmed.teamAisNew else "",self.toBeConfirmed.teamB, "[NEW]" if self.toBeConfirmed.teamBisNew else "", self.toBeConfirmed.scoreA, self.toBeConfirmed.scoreB)
             },
         'yes': {
             'is': lambda m: self.genericReaction(m, r"^(yes|y)$",r"^(ok)$"),
-            'do': lambda *a: 'Added #{}: **{}**-**{}**: {}-{}'.format(self.lastValid.gameId,self.lastValid.teamA, self.lastValid.teamB, self.lastValid.scoreA, self.lastValid.scoreB, )
+            'do': lambda *a: 'Added #{}: **{}**{}-**{}**{}: {}-{}'.format(self.lastValid.gameId, self.lastValid.teamA,  "[NEW]" if self.lastValid.teamAisNew else "", self.lastValid.teamB,  "[NEW]" if self.lastValid.teamBisNew else "", self.lastValid.scoreA, self.lastValid.scoreB, )
             },
         'no': {
             'is': lambda m: self.genericReaction(m, r"^(no?)$", r"^(cancel)$"),
-            'do': lambda *a: 'Canceled: "{}"-"{}": "{}" - "{}". ({})'.format(self.lastCancelled.teamA, self.lastCancelled.teamB, self.lastCancelled.scoreA, self.lastCancelled.scoreB, a[0])
+            'do': lambda *a: 'Canceled: "{}"{}-"{}"{}: "{}" - "{}". ({})'.format(self.lastCancelled.teamA,"[NEW]" if self.lastCancelled.teamAisNew else "", self.lastCancelled.teamB,"[NEW]" if self.lastCancelled.teamBisNew else "", self.lastCancelled.scoreA, self.lastCancelled.scoreB, a[0])
             },
         'status': {
             'is': lambda m: self.genericReaction(m, r"^status$"),

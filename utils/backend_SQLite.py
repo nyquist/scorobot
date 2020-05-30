@@ -19,7 +19,7 @@ class SQLiteDB(Backend):
             self.c.execute('INSERT INTO championships (name, host_id) VALUES (?,?)',(name, host_id))
             self.conn.commit()
             return self.c.lastrowid
-        except sqlite3.IntegrityError as e:
+        except sqlite3.IntegrityError:
             self.c.execute('SELECT rowid FROM championships WHERE name=? AND host_id = ?',(name, host_id))
             result = self.c.fetchone()
             return result[0]
@@ -35,6 +35,10 @@ class SQLiteDB(Backend):
             self.c.execute('SELECT * FROM games WHERE championship_id = ? AND date >= ?',(championship_id,time.time() - 60*60*last_hours))
         else:
             self.c.execute('SELECT * FROM games WHERE championship_id = ?',(championship_id,))
+        return self.c.fetchall()
+    
+    def getTeams(self, championship_id):
+        self.c.execute('SELECT DISTINCT team1 FROM games UNION SELECT DISTINCT team2 FROM games')
         return self.c.fetchall()
 
 #if __name__ == '__main__':
