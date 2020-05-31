@@ -73,7 +73,7 @@ toBeConfirmed = {self.toBeConfirmed}
 TTL = {None if self.toBeConfirmed is None else self.toBeConfirmed.TTL}
 testing = {self.testing}
 running_on = {platform.system()}-{platform.release()}
-latest_commit = {subprocess.check_output('git log -1 --format=%cd').decode("utf-8")}
+latest_commit = {subprocess.Popen(['git', 'log', '-1', '--format=%cd'],stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].decode("utf-8")}
 ```
 """
             },
