@@ -102,7 +102,7 @@ latest_commit = {subprocess.Popen(['git', 'log', '-1', '--format=%cd'],stdout=su
 `all-time`: All time standings
 `today`: Today's standings
 `games`: Today's games
-`h2h teamA teamB | h2h teamA-teamB| h2h: Head to Head all-time)`
+`h2h teamA teamB | h2h teamA-teamB| h2h`: Head to Head all-time`
 `help`: This message
 `status`: Status"""
             },
