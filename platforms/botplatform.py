@@ -2,6 +2,7 @@ import re
 import time
 ## This platform is used to get os number. It's not platforms
 import platform
+import subprocess
 from fuzzywuzzy import fuzz
 
 
@@ -24,8 +25,8 @@ class Validator:
         else:
             fuzzyRatios = {teamName: fuzz.WRatio(team, teamName) for teamName in known_teams}
             fuzzyOptions = {key: item for key, item in fuzzyRatios.items() if item > fuzzy_limit}
-            print (fuzzyRatios)
-            print (fuzzyOptions)
+            #print (fuzzyRatios)
+            #print (fuzzyOptions)
             if len(fuzzyOptions.keys()) == 1:
                 return (list(fuzzyOptions.keys())[0], " [?{}]".format(list(fuzzyOptions.values())[0]))
             else:
@@ -47,6 +48,7 @@ class BotPlatform:
         self.lastValid = None
         self.lastCancelled = None
         self.toBeConfirmed = None
+        self.toReport = None
         self.testing = testing
         self.reactions = {
         'result': {
@@ -71,6 +73,7 @@ toBeConfirmed = {self.toBeConfirmed}
 TTL = {None if self.toBeConfirmed is None else self.toBeConfirmed.TTL}
 testing = {self.testing}
 running_on = {platform.system()}-{platform.release()}
+latest_commit = {subprocess.check_output('git log -1 --format=%cd').decode("utf-8")}
 ```
 """
             },
@@ -101,6 +104,10 @@ running_on = {platform.system()}-{platform.release()}
 `games`: Today's games
 `help`: This message
 `status`: Status"""
+            },
+        'h2h': {
+            'is': self._isH2H,
+            'do': lambda *a: self.h2h(self.toReport.teamA, self.toReport.teamB)
             },
     }
 
@@ -166,16 +173,45 @@ running_on = {platform.system()}-{platform.release()}
                     self.toBeConfirmed = Validator(x[0].strip(), x[1].strip(), int(x[2]), int(x[3]), self.tournament)
                     return True
         return False
+    
+    def _isH2H(self,message):
+        results = [
+            #TeamA - TeamB 4-2
+            r"^h2h(\s+(\S+)[\s-]+(\S+))?",
+        ]
+        for r in results:
+            search_result = re.search(r,message)
+            if search_result is not None:
+                x = search_result.groups()
+                print("Report H2H matched:",x)
+                if x==(None, None, None) and self.lastValid is not None:
+                    self.toReport = Validator(self.lastValid.teamA, self.lastValid.teamB, 0, 0, self.tournament)
+                    return True
+                elif len(x) == 3:
+                    #A B, A, B. We need the last 2 elements of this
+                    self.toReport = Validator(x[1].strip(), x[2].strip(), 0, 0, self.tournament)
+                    return True
+        return False
 
     def ranking(self, hours = None):
-        
         if hours is None:
             standings = self.tournament.getRanking()
         else:
             standings = self.tournament.getRanking(hours)
-        response ="\n{T:10} {M:>2} {W:>2} {D:>2} {L:>2} {GF:>3} {GA:>3} {P:>3}".format(T="Team",M="M", W="W", D="D", L="L", GF="GF", GA="GA", P="P")
+        response ="\n     {T:10} {M:>2} {W:>2} {D:>2} {L:>2} {GF:>3} {GA:>3} {P:>3}".format(T="Team",M="M", W="W", D="D", L="L", GF="GF", GA="GA", P="P")
+        c = 1
         for line in standings:
-            response +=  "\n{T:10} {M:2} {W:2} {D:2} {L:2} {GF:3} {GA:3} {P:3}".format(T=line[0],M=line[1]['w']+line[1]['d']+line[1]['l'], W=line[1]['w'], D=line[1]['d'], L=line[1]['l'], GF=line[1]['gf'], GA=line[1]['ga'], P=line[1]['p'])
+            response +=  "\n{C:3}. {T:10} {M:2} {W:2} {D:2} {L:2} {GF:3} {GA:3} {P:3}".format(C=c,T=line[0],M=line[1]['w']+line[1]['d']+line[1]['l'], W=line[1]['w'], D=line[1]['d'], L=line[1]['l'], GF=line[1]['gf'], GA=line[1]['ga'], P=line[1]['p'])
+            c+=1
+        return f"```{response}```"
+    
+    def h2h(self, teamA, teamB, hours = 0):
+        standings = self.tournament.getRanking(hours, [teamA, teamB])
+        response ="\n     {T:10} {M:>2} {W:>2} {D:>2} {L:>2} {GF:>3} {GA:>3} {P:>3}".format(T="Team",M="M", W="W", D="D", L="L", GF="GF", GA="GA", P="P")
+        c = 1
+        for line in standings:
+            response +=  "\n{C:3}. {T:10} {M:2} {W:2} {D:2} {L:2} {GF:3} {GA:3} {P:3}".format(C=c,T=line[0],M=line[1]['w']+line[1]['d']+line[1]['l'], W=line[1]['w'], D=line[1]['d'], L=line[1]['l'], GF=line[1]['gf'], GA=line[1]['ga'], P=line[1]['p'])
+            c+=1
         return f"```{response}```"
     
     def games(self, hours = None):

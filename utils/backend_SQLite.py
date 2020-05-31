@@ -30,11 +30,21 @@ class SQLiteDB(Backend):
         print(game_details)
         return self.c.lastrowid
         
-    def getGames(self, championship_id, last_hours):
+    def getGames(self, championship_id, last_hours, teams_filter):
+        query = 'SELECT * FROM games WHERE championship_id = ?'
+        bindings = [championship_id]
         if last_hours > 0:
-            self.c.execute('SELECT * FROM games WHERE championship_id = ? AND date >= ?',(championship_id,time.time() - 60*60*last_hours))
-        else:
-            self.c.execute('SELECT * FROM games WHERE championship_id = ?',(championship_id,))
+            query += ' AND date >= ?'
+            bindings.append(time.time() - 60*60*last_hours)
+        if len(teams_filter)>0:
+            query += f" AND team1 IN {tuple(teams_filter)} AND team2 IN {tuple(teams_filter)}"
+            # TODO below code should be better but not working
+            #query += f" AND team1 IN ? AND team2 IN ?"
+            #bindings.append(tuple(teams_filter))
+            #bindings.append(tuple(teams_filter))
+        #print (query)
+        #print (bindings)
+        self.c.execute(query, bindings)
         return self.c.fetchall()
     
     def getTeams(self, championship_id):

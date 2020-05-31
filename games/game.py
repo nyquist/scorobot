@@ -31,13 +31,13 @@ class Tournament:
         game_details = (game.date, str(game.teams[0]), str(game.teams[1]), int(game.score[0]), int(game.score[1]), str(game.duration), self.id)
         return backend.addGame(game_details)
     def getGames(self, last_hours = 0):
-        return backend.getGames(self.id, last_hours)
+        return backend.getGames(self.id, last_hours, teams_filter = [])
     def getTeams(self):
         return [row[0] for row in backend.getTeams(self.id)]
 
-    def getRanking(self, last_hours = 0):
+    def getRanking(self, last_hours = 0, teams_filter=[]):
         teams = dict()
-        for game in backend.getGames(self.id, last_hours):
+        for game in backend.getGames(self.id, last_hours, teams_filter):
             teamA = game[2]
             teamB = game[3]
             if teamA in teams:
