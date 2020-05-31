@@ -102,6 +102,7 @@ latest_commit = {subprocess.check_output('git log -1 --format=%cd').decode("utf-
 `all-time`: All time standings
 `today`: Today's standings
 `games`: Today's games
+`h2h teamA teamB | h2h teamA-teamB| h2h: Head to Head all-time)`
 `help`: This message
 `status`: Status"""
             },
