@@ -17,4 +17,4 @@ WORKDIR /usr/src/app/scorobot
 
 VOLUME /usr/src/app/scorobot/storage
 
-CMD [ "python", "-m","scorobot" "-e" "PYTHONUNBUFFERED=0" ]
+CMD [ "python", "-m","scorobot"]
