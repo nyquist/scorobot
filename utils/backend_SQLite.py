@@ -36,19 +36,23 @@ class SQLiteDB(Backend):
         if last_hours > 0:
             query += ' AND date >= ?'
             bindings.append(time.time() - 60*60*last_hours)
+        if last_hours < 0:
+            query += ' AND date <= ?'
+            bindings.append(time.time() - 60*60*(-last_hours))
         if len(teams_filter)>0:
             query += f" AND team1 IN {tuple(teams_filter)} AND team2 IN {tuple(teams_filter)}"
             # TODO below code should be better but not working
             #query += f" AND team1 IN ? AND team2 IN ?"
             #bindings.append(tuple(teams_filter))
             #bindings.append(tuple(teams_filter))
-        #print (query)
-        #print (bindings)
+        print (query)
+        print (bindings)
+        #query += " LIMIT 1"
         self.c.execute(query, bindings)
         return self.c.fetchall()
     
     def getTeams(self, championship_id):
-        self.c.execute('SELECT DISTINCT team1 FROM games UNION SELECT DISTINCT team2 FROM games')
+        self.c.execute('SELECT DISTINCT team1 FROM games WHERE championship_id = ? UNION SELECT DISTINCT team2 FROM games WHERE championship_id = ?', (championship_id, championship_id))
         return self.c.fetchall()
 
 #if __name__ == '__main__':

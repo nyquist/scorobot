@@ -25,9 +25,13 @@ class Validator:
         else:
             fuzzyRatios = {teamName: fuzz.WRatio(team, teamName) for teamName in known_teams}
             fuzzyOptions = {key: item for key, item in fuzzyRatios.items() if item > fuzzy_limit}
-            #print (fuzzyRatios)
-            #print (fuzzyOptions)
-            if len(fuzzyOptions.keys()) == 1:
+            #print (team,fuzzyRatios)
+            #print (team,fuzzyOptions)
+            if 100 in fuzzyOptions.values():
+                for key, value in fuzzyOptions.items():
+                    if value == 100:
+                        return (key, " [?100]")
+            elif len(fuzzyOptions.keys()) == 1:
                 return (list(fuzzyOptions.keys())[0], " [?{}]".format(list(fuzzyOptions.values())[0]))
             else:
                 return (team, " [NEW]")
@@ -37,6 +41,7 @@ class Validator:
         if self.tournament is not None:
             self.gameId = self.tournament.addGame(self.teamA, self.teamB, self.scoreA, self.scoreB)
             print("Adding game:", self.gameId, self)
+            
         return self.gameId
     def __str__(self):
         return "{}-{} {}-{}.".format(self.teamA, self.teamB, self.scoreA, self.scoreB)    
@@ -197,12 +202,50 @@ latest_commit = {subprocess.Popen(['git', 'log', '-1', '--format=%cd'],stdout=su
     def ranking(self, hours = None):
         if hours is None:
             standings = self.tournament.getRanking()
+            elos = self.tournament.getELOs()
         else:
             standings = self.tournament.getRanking(hours)
-        response ="\n     {T:10} {M:>2} {W:>2} {D:>2} {L:>2} {GF:>3} {GA:>3} {P:>3}".format(T="Team",M="M", W="W", D="D", L="L", GF="GF", GA="GA", P="P")
+            elos1 = self.tournament.getELOs()
+            elos2 = self.tournament.getELOs(before_hours = 48)
+            elos = elos1.copy()
+            print(elos1)
+            print(elos2)
+            for key in elos1.keys():
+                if key in elos2.keys():
+                    elos[key]['R'] = elos1[key]['R'] - elos2[key]['R']
+                else:
+                    elos[key]['R'] = elos1[key]['R']
+        
+        print(elos)
+        response ="\n     {T:10} {M:>2} {W:>2} {D:>2} {L:>2} {GF:>3} {GA:>3} {P:>3} {E:>5}".format(
+            T="Team",
+            M="M", 
+            W="W", 
+            D="D", 
+            L="L", 
+            GF="GF", 
+            GA="GA", 
+            P="P", 
+            E="ELO")
         c = 1
         for line in standings:
-            response +=  "\n{C:3}. {T:10} {M:2} {W:2} {D:2} {L:2} {GF:3} {GA:3} {P:3}".format(C=c,T=line[0],M=line[1]['w']+line[1]['d']+line[1]['l'], W=line[1]['w'], D=line[1]['d'], L=line[1]['l'], GF=line[1]['gf'], GA=line[1]['ga'], P=line[1]['p'])
+            format_line = "\n{C:3}. {T:10} {M:2} {W:2} {D:2} {L:2} {GF:3} {GA:3} {P:3} "
+            if hours is None:
+                format_line +="{E:5}"
+            else:
+                format_line +="{E:+5}"
+
+            response += format_line.format(
+                C=c,
+                T=line[0],
+                M=line[1]['w']+line[1]['d']+line[1]['l'], 
+                W=line[1]['w'], 
+                D=line[1]['d'], 
+                L=line[1]['l'], 
+                GF=line[1]['gf'], 
+                GA=line[1]['ga'], 
+                P=line[1]['p'], 
+                E=elos[line[0]]['R'])
             c+=1
         return f"```{response}```"
     
