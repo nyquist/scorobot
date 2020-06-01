@@ -228,7 +228,8 @@ latest_commit = {subprocess.Popen(['git', 'log', '-1', '--format=%cd'],stdout=su
             P="P", 
             E="ELO")
         c = 1
-        for line in standings:
+        ordered_standings = sorted(standings, key=lambda k: elos[k[0]]['R'], reverse=True)
+        for line in ordered_standings:
             format_line = "\n{C:3}. {T:10} {M:2} {W:2} {D:2} {L:2} {GF:3} {GA:3} {P:3} "
             if hours is None:
                 format_line +="{E:5}"
